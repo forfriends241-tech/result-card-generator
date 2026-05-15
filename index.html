@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Result Card Generator - Web Version</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section h2 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .marks-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            margin-left: 10px;
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 10px 20px rgba(108, 117, 125, 0.3);
+        }
+
+        .students-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .student-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .student-info {
+            flex: 1;
+        }
+
+        .student-name {
+            font-weight: 600;
+            color: #1e3c72;
+            margin-bottom: 3px;
+        }
+
+        .student-class {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .student-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-edit {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #218838;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        .btn-download {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-download:hover {
+            background: #0056b3;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 4px solid #28a745;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 4px solid #dc3545;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-top: 3px solid #667eea;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .school-header {
+            background: linear-gradient(135deg, #8b7355 0%, #6b5344 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .school-header h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .school-header p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Result Card Generator</h1>
+            <p>बिना किसी installation के सीधे browser में result cards बनाओ!</p>
+        </div>
+
+        <div class="content">
+            <!-- Left Section: Add Students -->
+            <div class="section">
+                <div class="school-header">
+                    <h3>🏫 School Details</h3>
+                    <p>अपने स्कूल की जानकारी डालें</p>
+                </div>
+
+                <form id="schoolForm">
+                    <div class="form-group">
+                        <label>School Name</label>
+                        <input type="text" id="schoolName" value="R.K. ACADEMY" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input type="text" id="schoolAddress" value="DHARMPUR BHITAULI MAHARAJGANJ" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="text" id="schoolPhone" value="91-7308162120" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="schoolEmail" value="rkaacademy@gmail.com" required>
+                    </div>
+                </form>
+
+                <hr style="margin: 25px 0; border: none; border-top: 2px solid #e0e0e0;">
+
+                <h2 style="margin-top: 0;">Add Student</h2>
+                <div id="message"></div>
+
+                <form id="studentForm">
+                    <div class="form-group">
+                        <label>Student Name *</label>
+                        <input type="text" id="studentName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Father Name</label>
+                        <input type="text" id="fatherName">
+                    </div>
+                    <div class="form-group">
+                        <label>Mother Name</label>
+                        <input type="text" id="motherName">
+                    </div>
+                    <div class="form-group">
+                        <label>Class *</label>
+                        <input type="text" id="studentClass" value="8th A" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Roll No *</label>
+                        <input type="number" id="rollNo" required>
+                    </div>
+
+                    <h3 style="margin: 20px 0 15px; color: #1e3c72; font-size: 16px;">📚 Marks (out of 25)</h3>
+                    <div class="marks-grid">
+                        <div class="form-group">
+                            <label>Hindi 1</label>
+                            <input type="number" id="hindi1" min="0" max="25" value="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Hindi 2</label>
+                            <input type="number" id="hindi2" min="0" max="25" value="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>English 1</label>
+                            <input type="number" id="english1" min="0" max="25" value="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>English 2</label>
+                            <input type="number" id="english2" min="0" max="25" value="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Math</label>
+                            <input type="number" id="math" min="0" max="25" value="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Science</label>
+                            <input type="number" id="science" min="0" max="25" value="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>SST</label>
+                            <input type="number" id="sst" min="0" max="25" value="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>GK</label>
+                            <input type="number" id="gk" min="0" max="25" value="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Drawing</label>
+                            <input type="number" id="drawing" min="0" max="25" value="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Computer</label>
+                            <input type="number" id="computer" min="0" max="25" value="0" required>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button type="submit">➕ Add Student</button>
+                        <button type="reset" class="btn-secondary">Clear</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Section: Students List & Generate PDFs -->
+            <div class="section">
+                <h2>👥 Students & Generate</h2>
+                
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalStudents">0</div>
+                        <div class="stat-label">Total Students</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="avgMarks">0</div>
+                        <div class="stat-label">Avg Marks</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="avgPercentage">0%</div>
+                        <div class="stat-label">Avg %</div>
+                    </div>
+                </div>
+
+                <div class="students-list" id="studentsList">
+                    <p style="text-align: center; color: #999; padding: 30px;">कोई student add नहीं किया गया</p>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <button id="downloadAllBtn" onclick="downloadAllPDFs()" style="width: 100%; background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                        📥 Download All PDFs
+                    </button>
+                    <button onclick="clearAllStudents()" style="width: 100%; margin-top: 10px;" class="btn-secondary">
+                        🗑️ Clear All
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        let students = JSON.parse(localStorage.getItem('students')) || [];
+
+        const gradeScale = {
+            91: 'A1', 81: 'A2', 71: 'B1', 61: 'B2',
+            51: 'C1', 41: 'C2', 33: 'D', 0: 'E'
+        };
+
+        function getGrade(percentage) {
+            for (let [mark, grade] of Object.entries(gradeScale)) {
+                if (percentage >= mark) return grade;
+            }
+            return 'E';
+        }
+
+        document.getElementById('studentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const student = {
+                id: Date.now(),
+                name: document.getElementById('studentName').value,
+                father: document.getElementById('fatherName').value,
+                mother: document.getElementById('motherName').value,
+                class: document.getElementById('studentClass').value,
+                rollNo: document.getElementById('rollNo').value,
+                marks: {
+                    hindi1: parseFloat(document.getElementById('hindi1').value),
+                    hindi2: parseFloat(document.getElementById('hindi2').value),
+                    english1: parseFloat(document.getElementById('english1').value),
+                    english2: parseFloat(document.getElementById('english2').value),
+                    math: parseFloat(document.getElementById('math').value),
+                    science: parseFloat(document.getElementById('science').value),
+                    sst: parseFloat(document.getElementById('sst').value),
+                    gk: parseFloat(document.getElementById('gk').value),
+                    drawing: parseFloat(document.getElementById('drawing').value),
+                    computer: parseFloat(document.getElementById('computer').value)
+                }
+            };
+
+            students.push(student);
+            localStorage.setItem('students', JSON.stringify(students));
+            showMessage('✅ Student added successfully!', 'success');
+            document.getElementById('studentForm').reset();
+            renderStudents();
+        });
+
+        function renderStudents() {
+            const list = document.getElementById('studentsList');
+            
+            if (students.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #999; padding: 30px;">कोई student add नहीं किया गया</p>';
+                updateStats();
+                return;
+            }
+
+            list.innerHTML = students.map(student => {
+                const total = Object.values(student.marks).reduce((a, b) => a + b, 0);
+                const avg = (total / 10).toFixed(1);
+                const percentage = (avg * 4).toFixed(1);
+                const grade = getGrade(percentage);
+
+                return `
+                    <div class="student-item">
+                        <div class="student-info">
+                            <div class="student-name">${student.name}</div>
+                            <div class="student-class">Roll No: ${student.rollNo} | Class: ${student.class} | Avg: ${avg}/25 (${percentage}%) - ${grade}</div>
+                        </div>
+                        <div class="student-actions">
+                            <button class="btn-small btn-download" onclick="downloadSinglePDF(${student.id})">Download</button>
+                            <button class="btn-small btn-delete" onclick="deleteStudent(${student.id})">Delete</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            updateStats();
+        }
+
+        function updateStats() {
+            document.getElementById('totalStudents').textContent = students.length;
+
+            if (students.length > 0) {
+                const allMarks = students.flatMap(s => Object.values(s.marks));
+                const avgMarks = (allMarks.reduce((a, b) => a + b, 0) / allMarks.length).toFixed(1);
+                const avgPercentage = (avgMarks * 4).toFixed(1);
+                
+                document.getElementById('avgMarks').textContent = avgMarks;
+                document.getElementById('avgPercentage').textContent = avgPercentage + '%';
+            }
+        }
+
+        function showMessage(msg, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = type === 'success' ? 'success-message' : 'error-message';
+            messageDiv.textContent = msg;
+            setTimeout(() => messageDiv.textContent = '', 3000);
+        }
+
+        function deleteStudent(id) {
+            if (confirm('क्या आप इस student को delete करना चाहते हैं?')) {
+                students = students.filter(s => s.id !== id);
+                localStorage.setItem('students', JSON.stringify(students));
+                renderStudents();
+                showMessage('✅ Student deleted!', 'success');
+            }
+        }
+
+        function downloadSinglePDF(id) {
+            const student = students.find(s => s.id === id);
+            generatePDF(student);
+        }
+
+        function downloadAllPDFs() {
+            if (students.length === 0) {
+                showMessage('❌ कोई student नहीं है!', 'error');
+                return;
+            }
+
+            students.forEach((student, index) => {
+                setTimeout(() => {
+                    generatePDF(student);
+                }, index * 500);
+            });
+
+            showMessage(`✅ ${students.length} PDFs download हो रहे हैं!`, 'success');
+        }
+
+        function generatePDF(student) {
+            const schoolName = document.getElementById('schoolName').value;
+            const schoolAddress = document.getElementById('schoolAddress').value;
+            const schoolPhone = document.getElementById('schoolPhone').value;
+            const schoolEmail = document.getElementById('schoolEmail').value;
+
+            const total = Object.values(student.marks).reduce((a, b) => a + b, 0);
+            const avg = (total / 10).toFixed(1);
+            const percentage = (avg * 4).toFixed(1);
+            const grade = getGrade(percentage);
+
+            const htmlContent = `
+                <html>
+                <head>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        .header { text-align: center; margin-bottom: 20px; border-bottom: 3px solid #8b7355; padding-bottom: 15px; }
+                        .header h1 { margin: 0; color: #1a1a4d; font-size: 24px; }
+                        .header p { margin: 5px 0; color: #333; font-size: 12px; }
+                        .info-table { width: 100%; margin-bottom: 20px; border-collapse: collapse; }
+                        .info-table td { padding: 8px; border: 1px solid #ddd; font-size: 12px; }
+                        .info-table td:first-child { background: #f0f0f0; font-weight: bold; width: 25%; }
+                        .marks-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                        .marks-table th { background: #8b7355; color: white; padding: 10px; text-align: left; font-size: 11px; }
+                        .marks-table td { padding: 8px; border: 1px solid #ddd; font-size: 11px; text-align: center; }
+                        .marks-table td:first-child { text-align: left; }
+                        .total-row { background: #f0f0f0; font-weight: bold; }
+                        .summary { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+                        .summary-box { background: #f9f9f9; padding: 12px; border: 1px solid #ddd; text-align: center; }
+                        .summary-box label { font-weight: bold; display: block; margin-bottom: 5px; font-size: 12px; }
+                        .summary-box .value { font-size: 18px; color: #667eea; font-weight: bold; }
+                        .signatures { margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; text-align: center; }
+                        .signature-line { border-top: 2px solid #333; margin-top: 30px; font-size: 11px; color: #666; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>${schoolName}</h1>
+                        <p>${schoolAddress}</p>
+                        <p>📞 ${schoolPhone} | 📧 ${schoolEmail}</p>
+                    </div>
+
+                    <table class="info-table">
+                        <tr>
+                            <td>Scholar's Name</td>
+                            <td>${student.name}</td>
+                            <td>Class</td>
+                            <td>${student.class}</td>
+                        </tr>
+                        <tr>
+                            <td>Father's Name</td>
+                            <td>${student.father}</td>
+                            <td>Roll No.</td>
+                            <td>${student.rollNo}</td>
+                        </tr>
+                        <tr>
+                            <td>Mother's Name</td>
+                            <td>${student.mother}</td>
+                            <td>Session</td>
+                            <td>2025-26</td>
+                        </tr>
+                    </table>
+
+                    <h3>📚 Academic Performance</h3>
+                    <table class="marks-table">
+                        <tr>
+                            <th>Subject</th>
+                            <th>Unit Test 1</th>
+                            <th>Half Yearly</th>
+                            <th>Unit Test 2</th>
+                            <th>Annual</th>
+                            <th>Total</th>
+                            <th>Grade</th>
+                        </tr>
+                        ${[
+                            ['Hindi 1', student.marks.hindi1],
+                            ['Hindi 2', student.marks.hindi2],
+                            ['English 1', student.marks.english1],
+                            ['English 2', student.marks.english2],
+                            ['Math', student.marks.math],
+                            ['Science', student.marks.science],
+                            ['SST', student.marks.sst],
+                            ['GK', student.marks.gk],
+                            ['Drawing', student.marks.drawing],
+                            ['Computer', student.marks.computer]
+                        ].map(([subject, mark]) => `
+                            <tr>
+                                <td>${subject}</td>
+                                <td>${mark}</td>
+                                <td>${mark}</td>
+                                <td>${mark}</td>
+                                <td>${mark}</td>
+                                <td>${(mark * 1.5).toFixed(0)}</td>
+                                <td>${getGrade(mark * 4)}</td>
+                            </tr>
+                        `).join('')}
+                        <tr class="total-row">
+                            <td>TOTAL</td>
+                            <td colspan="5">${total}</td>
+                            <td>${grade}</td>
+                        </tr>
+                    </table>
+
+                    <div class="summary">
+                        <div class="summary-box">
+                            <label>Total Marks</label>
+                            <div class="value">${total}/250</div>
+                        </div>
+                        <div class="summary-box">
+                            <label>Percentage</label>
+                            <div class="value">${percentage}%</div>
+                        </div>
+                    </div>
+
+                    <div class="signatures">
+                        <div>
+                            <div class="signature-line">Class Teacher's Sign.</div>
+                        </div>
+                        <div>
+                            <div class="signature-line">Date: ${new Date().toLocaleDateString()}</div>
+                        </div>
+                        <div>
+                            <div class="signature-line">Principal's Sign.</div>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            const element = document.createElement('div');
+            element.innerHTML = htmlContent;
+
+            const opt = {
+                margin: 10,
+                filename: `${student.name.replace(/\s+/g, '_')}_ResultCard.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function clearAllStudents() {
+            if (confirm('क्या सभी students को delete करना चाहते हैं?')) {
+                students = [];
+                localStorage.removeItem('students');
+                renderStudents();
+                showMessage('✅ All students cleared!', 'success');
+            }
+        }
+
+        // Initial render
+        renderStudents();
+    </script>
+</body>
+</html>
